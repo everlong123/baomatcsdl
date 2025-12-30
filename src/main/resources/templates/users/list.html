@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Users', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1><i class="bi bi-people"></i> Users</h1>
+                <p th:if="${!isAdmin}" class="text-muted mb-0">
+                    <i class="bi bi-info-circle"></i> Bạn chỉ có thể xem thông tin của chính mình
+                </p>
+            </div>
+            <a th:if="${isAdmin}" th:href="@{/users/create}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create User
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Account Status</th>
+                                <th>Default Tablespace</th>
+                                <th>Profile</th>
+                                <th>Roles</th>
+                                <th>Created Date</th>
+                                <th th:if="${isAdmin}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${users == null or users.isEmpty()}">
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox"></i> Không có users nào được tìm thấy
+                                </td>
+                            </tr>
+                            <tr th:each="user : ${users}" th:if="${users != null and !users.isEmpty()}">
+                                <td>
+                                    <a th:href="@{/users/{username}(username=${user.username})}" 
+                                       th:text="${user.username}">USERNAME</a>
+                                </td>
+                                <td>
+                                    <span th:if="${user.accountStatus == 'OPEN'}" 
+                                          class="badge bg-success" th:text="${user.accountStatus}">OPEN</span>
+                                    <span th:if="${user.accountStatus != null and user.accountStatus != 'OPEN'}" 
+                                          class="badge bg-danger" th:text="${user.accountStatus}">LOCKED</span>
+                                    <span th:if="${user.accountStatus == null}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${user.defaultTablespace ?: '-'}">-</td>
+                                <td th:text="${user.profile ?: '-'}">-</td>
+                                <td>
+                                    <span th:if="${user.roles != null and !user.roles.isEmpty()}" 
+                                          th:each="role, iterStat : ${user.roles}" 
+                                          class="badge bg-info me-1" th:text="${role}">ROLE</span>
+                                    <span th:if="${user.roles == null or user.roles.isEmpty()}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${user.createdDate != null ? #temporals.format(user.createdDate, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                                <td th:if="${isAdmin}">
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/users/{username}(username=${user.username})}" 
+                                           class="btn btn-outline-info" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/users/{username}/edit(username=${user.username})}" 
+                                           class="btn btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form th:if="${user.accountStatus == 'OPEN'}" 
+                                              th:action="@{/users/{username}/lock(username=${user.username})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-warning" title="Lock">
+                                                <i class="bi bi-lock"></i>
+                                            </button>
+                                        </form>
+                                        <form th:if="${user.accountStatus != null and user.accountStatus != 'OPEN'}" 
+                                              th:action="@{/users/{username}/unlock(username=${user.username})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-success" title="Unlock">
+                                                <i class="bi bi-unlock"></i>
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/users/{username}/delete(username=${user.username})}" 
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

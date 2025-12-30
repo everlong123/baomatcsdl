@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Edit User', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-pencil"></i> Edit User</h1>
+            <a th:href="@{/users}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/users/{username}/edit(username=${user.username})}" method="post" th:object="${user}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" 
+                                   th:value="${user.username}" readonly>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="password" 
+                                   th:field="*{password}" placeholder="Leave blank to keep current">
+                            <small class="form-text text-muted">Leave blank to keep current password</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="defaultTablespace" class="form-label">Default Tablespace</label>
+                            <select class="form-select" id="defaultTablespace" 
+                                    th:field="*{defaultTablespace}">
+                                <option value="">Select tablespace</option>
+                                <option th:each="ts : ${tablespaces}" 
+                                        th:value="${ts}" th:text="${ts}">TABLESPACE</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="temporaryTablespace" class="form-label">Temporary Tablespace</label>
+                            <input type="text" class="form-control" id="temporaryTablespace" 
+                                   th:field="*{temporaryTablespace}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="quota" class="form-label">Quota</label>
+                            <input type="text" class="form-control" id="quota" 
+                                   th:field="*{quota}" placeholder="e.g., 100M or UNLIMITED">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="profile" class="form-label">Profile</label>
+                            <select class="form-select" id="profile" th:field="*{profile}">
+                                <option value="">Select profile (or leave blank)</option>
+                                <option th:each="p : ${profiles}" 
+                                        th:value="${p.profileName}" 
+                                        th:text="${p.profileName}">PROFILE</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Update User
+                        </button>
+                        <a th:href="@{/users/{username}(username=${user.username})}" class="btn btn-info">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                        <a th:href="@{/privileges/grant?privilegeType=ROLE&grantee={username}(username=${user.username})}" 
+                           class="btn btn-success">
+                            <i class="bi bi-shield-check"></i> Grant Role
+                        </a>
+                        <a th:href="@{/privileges/grant?privilegeType=SYSTEM&grantee={username}(username=${user.username})}" 
+                           class="btn btn-warning">
+                            <i class="bi bi-key"></i> Grant Privilege
+                        </a>
+                        <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

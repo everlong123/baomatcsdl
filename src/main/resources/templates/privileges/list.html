@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Privileges', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-key"></i> Privileges</h1>
+            <a th:if="${isAdmin}" th:href="@{/privileges/grant}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Grant Privilege
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Privilege</th>
+                                <th>Grantee</th>
+                                <th>Grantor</th>
+                                <th>Type</th>
+                                <th>Admin Option</th>
+                                <th th:if="${isAdmin}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="priv : ${privileges}">
+                                <td th:text="${priv.privilege}">PRIVILEGE</td>
+                                <td th:text="${priv.grantee}">-</td>
+                                <td th:text="${priv.grantor}">-</td>
+                                <td>
+                                    <span class="badge bg-info" th:text="${priv.type}">DIRECT</span>
+                                </td>
+                                <td>
+                                    <span th:if="${priv.adminOption}" class="badge bg-warning">Yes</span>
+                                    <span th:if="${!priv.adminOption}" class="badge bg-secondary">No</span>
+                                </td>
+                                <td th:if="${isAdmin}">
+                                    <form th:if="${priv.type == 'DIRECT'}" th:action="@{/privileges/revoke}" method="post" class="d-inline">
+                                        <input type="hidden" name="privilegeType" value="SYSTEM">
+                                        <input type="hidden" name="privilege" th:value="${priv.privilege}">
+                                        <input type="hidden" name="grantee" th:value="${priv.grantee}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Revoke ' + this.form.privilege.value + ' from ' + this.form.grantee.value + '?');"
+                                                title="Revoke">
+                                            <i class="bi bi-x-circle"></i> Revoke
+                                        </button>
+                                    </form>
+                                    <form th:if="${priv.type == 'OBJECT'}" th:action="@{/privileges/revoke}" method="post" class="d-inline">
+                                        <input type="hidden" name="privilegeType" value="OBJECT">
+                                        <input type="hidden" name="privilege" th:value="${priv.privilege}">
+                                        <input type="hidden" name="grantee" th:value="${priv.grantee}">
+                                        <input type="hidden" name="table" th:value="${priv.objectName}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Revoke ' + this.form.privilege.value + ' on ' + this.form.table.value + ' from ' + this.form.grantee.value + '?');"
+                                                title="Revoke">
+                                            <i class="bi bi-x-circle"></i> Revoke
+                                        </button>
+                                    </form>
+                                    <span th:if="${priv.type == 'ROLE'}" class="text-muted">Use Roles page to revoke</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

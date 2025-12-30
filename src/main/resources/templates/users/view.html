@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='User Details', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-person"></i> User Details</h1>
+            <div>
+                <a th:href="@{/users}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+                <a th:if="${isAdmin}" th:href="@{/users/{username}/edit(username=${user.username})}" 
+                   class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+            </div>
+        </div>
+        
+        <!-- Alert if user not in APP_LOGIN_USER -->
+        <div th:if="${isAdmin}" class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> 
+            <strong>Lưu ý:</strong> Nếu user này chưa thể login vào ứng dụng, có thể user chưa có trong APP_LOGIN_USER.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <!-- Form to add user to APP_LOGIN_USER -->
+        <div th:if="${isAdmin}" class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-plus"></i> Thêm vào APP_LOGIN_USER (cho user đã tạo trong Oracle)</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Nếu user này đã được tạo trực tiếp trong Oracle (không qua ứng dụng), 
+                    bạn cần thêm user vào APP_LOGIN_USER để có thể login vào ứng dụng.
+                </p>
+                <form th:action="@{/users/{username}/add-to-app-login(username=${user.username})}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password cho ứng dụng <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Nhập password để login vào ứng dụng" required>
+                            <small class="form-text text-muted">
+                                Password này sẽ được hash bằng BCrypt và lưu vào APP_LOGIN_USER.
+                                Có thể khác với Oracle password của user.
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Thêm vào APP_LOGIN_USER
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Account Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Username:</th>
+                                <td th:text="${user.username}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Account Status:</th>
+                                <td>
+                                    <span th:if="${user.accountStatus == 'OPEN'}" 
+                                          class="badge bg-success" th:text="${user.accountStatus}">OPEN</span>
+                                    <span th:if="${user.accountStatus != 'OPEN'}" 
+                                          class="badge bg-danger" th:text="${user.accountStatus}">LOCKED</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Created Date:</th>
+                                <td th:text="${#temporals.format(user.createdDate, 'yyyy-MM-dd HH:mm:ss')}">-</td>
+                            </tr>
+                            <tr th:if="${user.lockDate != null}">
+                                <th>Lock Date:</th>
+                                <td th:text="${#temporals.format(user.lockDate, 'yyyy-MM-dd HH:mm:ss')}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Default Tablespace:</th>
+                                <td th:text="${user.defaultTablespace}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Temporary Tablespace:</th>
+                                <td th:text="${user.temporaryTablespace}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Quota:</th>
+                                <td th:text="${user.quota}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Profile:</th>
+                                <td th:text="${user.profile}">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Full Name:</th>
+                                <td th:text="${user.fullName ?: '-'}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td th:text="${user.email ?: '-'}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Phone:</th>
+                                <td th:text="${user.phone ?: '-'}">-</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td th:text="${user.address ?: '-'}">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-shield-check"></i> Roles</h5>
+                        <a th:if="${isAdmin}" th:href="@{/privileges/grant?privilegeType=ROLE&grantee={username}(username=${user.username})}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Grant Role
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${user.roles != null and !user.roles.isEmpty()}">
+                            <div th:each="role : ${user.roles}" class="mb-2">
+                                <span class="badge bg-info me-2" th:text="${role}">ROLE</span>
+                                <form th:if="${isAdmin}" th:action="@{/privileges/revoke}" method="post" class="d-inline">
+                                    <input type="hidden" name="privilegeType" value="ROLE">
+                                    <input type="hidden" name="privilege" th:value="${role}">
+                                    <input type="hidden" name="grantee" th:value="${user.username}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                            onclick="return confirm('Revoke role ' + this.form.privilege.value + '?');">
+                                        <i class="bi bi-x-circle"></i> Revoke
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div th:if="${user.roles == null or user.roles.isEmpty()}" class="text-muted">
+                            No roles assigned
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-key"></i> Privileges</h5>
+                        <a th:if="${isAdmin}" th:href="@{/privileges/grant?privilegeType=SYSTEM&grantee={username}(username=${user.username})}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Grant Privilege
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${user.privileges != null and !user.privileges.isEmpty()}">
+                            <div th:each="priv : ${user.privileges}" class="mb-2">
+                                <span class="badge bg-primary" th:text="${priv.privilege}">PRIVILEGE</span>
+                                <small class="text-muted ms-2" th:text="'(' + ${priv.type} + ')'">(DIRECT)</small>
+                                <span th:if="${priv.adminOption}" class="badge bg-warning ms-1">ADMIN</span>
+                                <form th:if="${isAdmin and priv.type == 'DIRECT'}" 
+                                      th:action="@{/privileges/revoke}" method="post" class="d-inline ms-2">
+                                    <input type="hidden" name="privilegeType" value="SYSTEM">
+                                    <input type="hidden" name="privilege" th:value="${priv.privilege}">
+                                    <input type="hidden" name="grantee" th:value="${user.username}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                            onclick="return confirm('Revoke privilege ' + this.form.privilege.value + '?');">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div th:if="${user.privileges == null or user.privileges.isEmpty()}" class="text-muted">
+                            No privileges assigned
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

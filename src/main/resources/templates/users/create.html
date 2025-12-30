@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Create User', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-person-plus"></i> Create User</h1>
+            <a th:href="@{/users}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/users/create}" method="post" th:object="${user}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" 
+                                   th:field="*{username}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" 
+                                   th:field="*{password}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="defaultTablespace" class="form-label">Default Tablespace <span class="text-danger">*</span></label>
+                            <select class="form-select" id="defaultTablespace" 
+                                    th:field="*{defaultTablespace}" required>
+                                <option value="">Select tablespace</option>
+                                <option th:each="ts : ${tablespaces}" 
+                                        th:value="${ts}" th:text="${ts}">TABLESPACE</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="temporaryTablespace" class="form-label">Temporary Tablespace</label>
+                            <input type="text" class="form-control" id="temporaryTablespace" 
+                                   th:field="*{temporaryTablespace}" value="TEMP">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="quota" class="form-label">Quota <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="quota" 
+                                   th:field="*{quota}" placeholder="e.g., 100M or UNLIMITED" required>
+                            <small class="form-text text-muted">Enter quota (e.g., 100M, 1G) or UNLIMITED</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Create User
+                        </button>
+                        <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

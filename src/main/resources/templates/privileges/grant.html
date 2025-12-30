@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='Grant Privilege', content=~{::content})}">
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-key"></i> Grant Privilege</h1>
+            <a th:href="@{/privileges}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/privileges/grant}" method="post">
+                    <div class="mb-3">
+                        <label for="privilegeType" class="form-label">Privilege Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="privilegeType" name="privilegeType" required 
+                                onchange="toggleFields()">
+                            <option value="">Select type</option>
+                            <option th:each="type : ${privilegeTypes}" 
+                                    th:value="${type}" th:text="${type}">TYPE</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="systemPrivilegeField">
+                        <label for="privilege" class="form-label">System Privilege <span class="text-danger">*</span></label>
+                        <select class="form-select" id="privilege" name="privilege">
+                            <option value="">Select privilege</option>
+                            <option th:each="priv : ${systemPrivileges}" 
+                                    th:value="${priv}" th:text="${priv}">PRIVILEGE</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="roleField" style="display: none;">
+                        <label for="rolePrivilege" class="form-label">Role Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="rolePrivilege" name="privilege" 
+                               placeholder="Enter role name">
+                    </div>
+                    
+                    <div class="mb-3" id="objectPrivilegeField" style="display: none;">
+                        <label for="objectPrivilege" class="form-label">Object Privilege <span class="text-danger">*</span></label>
+                        <select class="form-select" id="objectPrivilege" name="privilege">
+                            <option value="">Select privilege</option>
+                            <option value="SELECT">SELECT</option>
+                            <option value="INSERT">INSERT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="tableField" style="display: none;">
+                        <label for="table" class="form-label">Table Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="table" name="table" 
+                               placeholder="e.g., APP_OWNER.APP_USER_PROFILE">
+                    </div>
+                    
+                    <div class="mb-3" id="columnField" style="display: none;">
+                        <label for="column" class="form-label">Column Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="column" name="column" 
+                               placeholder="e.g., EMAIL, PHONE">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="grantee" class="form-label">Grantee (User or Role) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="grantee" name="grantee" required 
+                               placeholder="Enter username or role name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="withOption" name="withOption" value="true">
+                            <label class="form-check-label" for="withOption">
+                                With Admin/Grant Option (allows grantee to grant this privilege to others)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Grant Privilege
+                        </button>
+                        <a th:href="@{/privileges}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <script>
+            function toggleFields() {
+                const type = document.getElementById('privilegeType').value;
+                document.getElementById('systemPrivilegeField').style.display = 
+                    (type === 'SYSTEM') ? 'block' : 'none';
+                document.getElementById('roleField').style.display = 
+                    (type === 'ROLE') ? 'block' : 'none';
+                document.getElementById('objectPrivilegeField').style.display = 
+                    (type === 'OBJECT' || type === 'COLUMN') ? 'block' : 'none';
+                document.getElementById('tableField').style.display = 
+                    (type === 'OBJECT' || type === 'COLUMN') ? 'block' : 'none';
+                document.getElementById('columnField').style.display = 
+                    (type === 'COLUMN') ? 'block' : 'none';
+            }
+        </script>
+    </div>
+</body>
+</html>
+
