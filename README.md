@@ -1,6 +1,6 @@
 # ỨNG DỤNG QUẢN LÝ NGƯỜI DÙNG ORACLE DATABASE
 
-Đồ án môn Bảo mật Cơ sở Dữ liệu - Năm học 2024-2025
+Đồ án môn Bảo mật Cơ sở Dữ liệu
 
 ## GIỚI THIỆU
 
