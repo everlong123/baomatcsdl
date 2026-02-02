@@ -246,13 +246,6 @@ FROM DBA_POLICIES
 WHERE OBJECT_OWNER = 'APP_OWNER';
 ```
 
-## TÁC GIẢ
-
-- Họ tên: [Họ và tên sinh viên]
-- MSSV: [Mã số sinh viên]
-- Lớp: [Lớp]
-- Email: [Email]
-
 ## GIẤY PHÉP
 
 Đồ án này được tạo ra cho mục đích học tập.
